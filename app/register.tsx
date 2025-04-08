@@ -10,57 +10,34 @@ import { BaseUrl } from '@/api';
 import { PaperSelect } from 'react-native-paper-select';
 import { NormalGet } from '@/actions/helpers';
 
-const AVAILABLE_SERVICES = [
-  { _id: '1', value: 'Plumbing' },
-  { _id: '2', value: 'Electrical' },
-  { _id: '3', value: 'Carpentry' },
-  { _id: '4', value: 'Painting' },
-  { _id: '5', value: 'Cleaning' },
-  { _id: '6', value: 'Gardening' },
-];
 
-const ROLES = [
-  { _id: 'customer', value: 'Customer' },
-  { _id: 'provider', value: 'Service Provider' },
-];
 
 export default function HomeScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
-  const [services, setServices] = useState({ value: '', selectedList: [], error: '' });
+  const [loading,setIsLoading]=useState(false)
   const toast = useToast();
   const router = useRouter();
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === 'dark';
   const theme = useTheme();
-const [loadedServices,setLoadedService]=useState([])
-useEffect(()=>{
-  async function getService(){
-    const data = await NormalGet("service")
-    const newData=data?.data?.map((sel:any)=>({
-            _id: sel.id,
-            value:sel.name
-          }));
-    setLoadedService(newData)
-  }
-  getService()
-},[])
+
   const { control, handleSubmit, formState: { errors }, trigger, getValues, reset, watch } = useForm({
     defaultValues: {
-      name: '',
+      firstName: '',
+      lastName: '',
       email: '',
       password: '',
       confirmPassword: '',
-      role: 'customer',
     }
   });
 
-  const role = watch('role');
+
 
   const onSubmit = async (data: any) => {
+    setIsLoading(true)
     try {
       const registrationData = {
         ...data,
-        services: data.role === 'provider' ? services.selectedList.map(s => s._id) : [],
       };
 
       const response = await axios.post(`${BaseUrl}/authentication/register`, registrationData);
@@ -73,7 +50,7 @@ useEffect(()=>{
           animationType: "slide-in",
         });
         reset();
-        setServices({ value: '', selectedList: [], error: '' });
+        
         router.push("/");
       }
     } catch (error) {
@@ -84,6 +61,8 @@ useEffect(()=>{
       //   animationType: "slide-in",
       // });
       console.log(error, BaseUrl);
+    }finally{
+      setIsLoading(false)
     }
   };
 
@@ -100,18 +79,18 @@ useEffect(()=>{
       <View style={styles.choppaContainer}>
         <Text style={[styles.choppa, { color: theme.colors.primary }]}>Kijumbe</Text>
 
-        <Text style={[styles.inputContainer, { color: theme.colors.onBackground }]}>Full Name</Text>
+        <Text style={[styles.inputContainer, { color: theme.colors.onBackground }]}>First Name</Text>
         <Controller
           control={control}
-          rules={{ required: 'Full Name is required' }}
+          rules={{ required: 'First Name is required' }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextInput
-              label="Full Name"
+              label="First Name"
               placeholder='Revay'
               mode='outlined'
               onBlur={() => {
                 onBlur();
-                trigger('name');
+                trigger('firstName');
               }}
               onChangeText={onChange}
               value={value}
@@ -123,9 +102,36 @@ useEffect(()=>{
                            }}
             />
           )}
-          name="name"
+          name="firstName"
         />
-        {errors.name && <Text style={styles.errorText}>{errors.name.message}</Text>}
+        {errors.firstName && <Text style={styles.errorText}>{errors.firstName.message}</Text>}
+        
+        <Text style={[styles.inputContainer, { color: theme.colors.onBackground }]}>Last Name</Text>
+        <Controller
+          control={control}
+          rules={{ required: 'Last Name is required' }}
+          render={({ field: { onChange, onBlur, value } }) => (
+            <TextInput
+              label="Last Name"
+              placeholder='Colizer'
+              mode='outlined'
+              onBlur={() => {
+                onBlur();
+                trigger('lastName');
+              }}
+              onChangeText={onChange}
+              value={value}
+              style={styles.input}
+              left={<TextInput.Icon icon="account" />}
+              theme={{
+                             ...paperSelectTheme,
+                             roundness: 20,
+                           }}
+            />
+          )}
+          name="lastName"
+        />
+        {errors.lastName && <Text style={styles.errorText}>{errors.lastName.message}</Text>}
 
         <Text style={[styles.inputContainer, { color: theme.colors.onBackground }]}>Email</Text>
         <Controller
@@ -231,68 +237,7 @@ useEffect(()=>{
         />
         {errors.confirmPassword && <Text style={styles.errorText}>{errors.confirmPassword.message}</Text>}
 
-        <Text style={[styles.inputContainer, { color: theme.colors.onBackground, marginTop: 20 }]}>Select Role</Text>
-        <Controller
-          control={control}
-          name="role"
-          rules={{ required: 'Role is required' }}
-          render={({ field: { onChange, value } }) => (
-            <PaperSelect
-              label="Select Role"
-              value={value}
-              onSelection={(selectedItem: any) => {
-                onChange(selectedItem.selectedList[0]._id);
-                if (selectedItem.selectedList[0]._id !== 'provider') {
-                  setServices({ value: '', selectedList: [], error: '' });
-                }
-              }}
-              arrayList={ROLES}
-              selectedArrayList={ROLES.filter(r => r._id === value)}
-              errorText={errors.role?.message}
-              multiEnable={false}
-              textInputMode="outlined"
-              hideSearchBox={true}
-              theme={{
-                             ...paperSelectTheme,
-                             roundness: 20,
-                           }}
-              // containerStyle={[styles.paperSelectContainer, { backgroundColor: isDarkMode ? theme.colors.surface : theme.colors.background }]}
-            />
-          )}
-        />
-
-        {role === 'provider' && (
-          <View style={styles.servicesContainer}>
-            <Text style={[styles.inputContainer, { color: theme.colors.onBackground, marginVertical: 10 }]}>
-              Select Services (Multiple)
-            </Text>
-            <PaperSelect
-              label="Select Services"
-              value={services.value}
-              onSelection={(value: any) => {
-                setServices({
-                  ...services,
-                  value: value.text,
-                  selectedList: value.selectedList,
-                  error: '',
-                });
-              }}
-              arrayList={loadedServices}
-              selectedArrayList={services.selectedList}
-              errorText={services.error}
-              multiEnable={true}
-              textInputMode="outlined"
-              theme={{
-                             ...paperSelectTheme,
-                             roundness: 20,
-                           }}
-              // containerStyle={[styles.paperSelectContainer, { backgroundColor: isDarkMode ? theme.colors.surface : theme.colors.background }]}
-            />
-            {services.selectedList.length === 0 && (
-              <Text style={styles.errorText}>Please select at least one service</Text>
-            )}
-          </View>
-        )}
+      
 
         <Pressable
           style={styles.button}
@@ -303,7 +248,7 @@ useEffect(()=>{
             buttonColor={theme.colors.primary}
             textColor={theme.colors.onPrimary}
             rippleColor={theme.colors.primaryContainer}
-            disabled={role === 'provider' && services.selectedList.length === 0}
+            disabled={loading}
           >
             <Text style={[styles.text, { color: theme.colors.onPrimary }]}>Register</Text>
           </Button>

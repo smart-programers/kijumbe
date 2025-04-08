@@ -13,7 +13,7 @@ export default function HomeScreen() {
       const theme = useTheme();
       const colorScheme = useColorScheme();
       const isDarkMode = colorScheme === 'dark';
-
+ const [loading,setIsLoading]=useState(false)
     const { control, handleSubmit, formState: { errors }, trigger, reset } = useForm({
         defaultValues: {
             email: '',
