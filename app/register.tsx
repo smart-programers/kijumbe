@@ -15,6 +15,7 @@ import axios from "axios";
 import { BaseUrl } from "@/api";
 import { PaperSelect } from "react-native-paper-select";
 import { NormalGet } from "@/actions/helpers";
+import * as Burnt from "burnt";
 
 import {
   PhoneNumberInput,
@@ -80,23 +81,21 @@ export default function HomeScreen() {
       );
 
       if (response.status === 200) {
-        toast.show("Registered successfully", {
-          type: "success",
-          placement: "top",
-          duration: 4000,
-          animationType: "slide-in",
+        Burnt.toast({
+          title:"Success", 
+          preset: "done",
+          message:"Registered successfully"
         });
         reset();
 
         router.push("/");
       }
     } catch (error) {
-      // toast.show("Registration failed", {
-      //   type: "danger",
-      //   placement: "top",
-      //   duration: 4000,
-      //   animationType: "slide-in",
-      // });
+     Burnt.toast({
+       title:"Error",
+       preset:"error",
+       message:"Registration failed", 
+      });
       console.log(error, BaseUrl);
     } finally {
       setIsLoading(false);

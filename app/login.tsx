@@ -7,6 +7,7 @@ import axios from 'axios';
 import { BaseUrl } from '@/api';
 import { useToast } from 'react-native-toast-notifications';
 import { ModernSave, save } from '@/actions/saveKey';
+import * as Burnt from "burnt";
 
 export default function HomeScreen() {
     const toast = useToast();
@@ -31,24 +32,22 @@ export default function HomeScreen() {
             .then((response) => {
                 if (response.status === 200) {
                     ModernSave('token', response.data);
-                    // toast.show("Logged in successfully", {
-                    //     type: "success",
-                    //     placement: "top",
-                    //     duration: 4000,
-                    //     animationType: "slide-in",
-                    // });
+                    Burnt.toast({
+                      title:"Success",
+                      message:"Logged in successfully",
+                      preset:"done"
+                    });
                     reset();
                     router.push("/(tabs)");
                     console.log(data);
                 }
             })
             .catch((error) => {
-                // toast.show("Incorrect Credentials", {
-                //     type: "danger",
-                //     placement: "top",
-                //     duration: 4000,
-                //     animationType: "slide-in",
-                // });
+                Burnt.toast({
+                  title:"Error",
+                  message:"Incorrect Credentials",
+                  preset:"error"
+                });
                 console.log(error, BaseUrl, data);
             });
     };
