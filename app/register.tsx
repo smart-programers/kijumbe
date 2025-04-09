@@ -10,7 +10,7 @@ import { useForm, Controller } from "react-hook-form";
 import { Button, TextInput, Text, useTheme } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { Link, useRouter } from "expo-router";
-import { useToast } from "react-native-toast-notifications";
+
 import axios from "axios";
 import { BaseUrl } from "@/api";
 import { PaperSelect } from "react-native-paper-select";
@@ -21,6 +21,7 @@ import {
   PhoneNumberInput,
   getCountryByCode,
 } from "react-native-paper-phone-number-input";
+import toast from "@/actions/toast";
 
 const includeCountries = [
   "AZ",
@@ -39,7 +40,7 @@ const includeCountries = [
 export default function HomeScreen() {
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [loading, setIsLoading] = useState(false);
-  const toast = useToast();
+
   const router = useRouter();
   const colorScheme = useColorScheme();
   const isDarkMode = colorScheme === "dark";
@@ -81,21 +82,21 @@ export default function HomeScreen() {
       );
 
       if (response.status === 200) {
-        Burnt.toast({
-          title:"Registered successfully", 
-          preset: "done",
-          message:"Registered successfully"
-        });
+        toast(
+          "Registered successfully", 
+          "done",
+          "Registered successfully"
+        );
         reset();
 
         router.push("/");
       }
     } catch (error:any) {
-     Burnt.toast({
-       title:error,
-       preset:"error",
-       message:"Registration failed", 
-      });
+     toast(
+       error,
+       "error",
+       "Registration failed", 
+      );
       console.log(error, BaseUrl);
     } finally {
       setIsLoading(false);

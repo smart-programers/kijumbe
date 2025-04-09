@@ -5,12 +5,13 @@ import { useForm, Controller } from 'react-hook-form';
 import { Link, useRouter } from 'expo-router';
 import axios from 'axios';
 import { BaseUrl } from '@/api';
-import { useToast } from 'react-native-toast-notifications';
+
 import { ModernSave, save } from '@/actions/saveKey';
 import * as Burnt from "burnt";
+import toast from '@/actions/toast';
 
 export default function HomeScreen() {
-    const toast = useToast();
+
       const theme = useTheme();
       const colorScheme = useColorScheme();
       const isDarkMode = colorScheme === 'dark';
@@ -32,24 +33,24 @@ export default function HomeScreen() {
             .then((response) => {
                 if (response.status === 200) {
                     ModernSave('token', response.data);
-                    Burnt.toast({
-                      title:"Logged in successfully",
-                       preset:"done",
-                      message:"Logged in successfully",
+                    toast(
+                      "Logged in successfully",
+                       "done",
+                      "Logged in successfully",
                      
-                    });
+                    );
                     reset();
                     router.push("/(tabs)");
                     console.log(data);
                 }
             })
             .catch((error) => {
-                Burnt.toast({
-                  title:"Incorrect Credentials",
-                   preset:"error",
-                  message:"Incorrect Credentials",
+                toast(
+                  "Incorrect Credentials",
+                   "error",
+                  "Incorrect Credentials",
                  
-                });
+                );
                 console.log(error, BaseUrl, data);
             });
     };
