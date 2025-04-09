@@ -33,9 +33,10 @@ export default function HomeScreen() {
                 if (response.status === 200) {
                     ModernSave('token', response.data);
                     Burnt.toast({
-                      title:"Success",
+                      title:"Logged in successfully",
+                       preset:"done",
                       message:"Logged in successfully",
-                      preset:"done"
+                     
                     });
                     reset();
                     router.push("/(tabs)");
@@ -44,9 +45,10 @@ export default function HomeScreen() {
             })
             .catch((error) => {
                 Burnt.toast({
-                  title:"Error",
+                  title:"Incorrect Credentials",
+                   preset:"error",
                   message:"Incorrect Credentials",
-                  preset:"error"
+                 
                 });
                 console.log(error, BaseUrl, data);
             });

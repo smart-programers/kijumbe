@@ -82,7 +82,7 @@ export default function HomeScreen() {
 
       if (response.status === 200) {
         Burnt.toast({
-          title:"Success", 
+          title:"Registered successfully", 
           preset: "done",
           message:"Registered successfully"
         });
@@ -90,9 +90,9 @@ export default function HomeScreen() {
 
         router.push("/");
       }
-    } catch (error) {
+    } catch (error:any) {
      Burnt.toast({
-       title:"Error",
+       title:error,
        preset:"error",
        message:"Registration failed", 
       });
