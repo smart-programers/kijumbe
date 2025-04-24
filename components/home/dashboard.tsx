@@ -4,7 +4,7 @@ import { Avatar, Button, Card, Text as TextPaper } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
 import { Fragment } from "react";
 
-export default function GroupDashboard() {
+export default function GroupDashboard({details}:any) {
   const title = "Jumla ya Akiba";
 
   const view = "Tazama";
@@ -60,7 +60,7 @@ export default function GroupDashboard() {
                     {contribution}
                   </TextPaper>
                   <TextPaper variant="bodyMedium" style={styles.text}>
-                    {currency} {contributedAmount}
+                    {currency} {details[0]?.total_paid}
                   </TextPaper>
                 </Card.Content>
               </Card>
@@ -71,7 +71,7 @@ export default function GroupDashboard() {
                     {fine}
                   </TextPaper>
                   <TextPaper variant="bodyMedium" style={styles.text}>
-                    {currency} {fineAmount}
+                    {currency} {details[0]?.fines}
                   </TextPaper>
                 </Card.Content>
               </Card>
@@ -88,7 +88,7 @@ export default function GroupDashboard() {
                     {paid}
                   </TextPaper>
                   <TextPaper variant="bodyMedium" style={styles.text}>
-                    {currency} {paidAmount}
+                    {currency} {details[0]?.total_received}
                   </TextPaper>
                 </Card.Content>
               </Card>
