@@ -1,5 +1,5 @@
-import { Text } from "react-native";
-import { View, StyleSheet } from "react-native";
+import React from 'react';
+import { Text, View, StyleSheet } from "react-native";
 import { Avatar } from "react-native-paper";
 import Notification from "./notification";
 
@@ -7,32 +7,40 @@ interface User {
   firstName?: string;
   photoUrl?: string;
 }
-export default function AvatarGroup({ user }: User) {
-  const firstName = "Guest";
+
+export default function AvatarGroup({ user }: { user: User | null }) {
+  const defaultFirstName = "Guest";
   const welcomeApp = "Karibu Kijumbe App";
-  const welcome = user
-    ? `Habari ${user?.firstName?.charAt(0)?.toUpperCase()}${user?.firstName?.slice(1)}`
-    : `Habari ${firstName.charAt(0).toUpperCase()}${firstName.slice(1)}`;
+  const firstNameToUse = user?.firstName || defaultFirstName;
+
+  const welcome = `Habari, ${firstNameToUse.charAt(0).toUpperCase()}${firstNameToUse.slice(1)}`;
+
   return (
-    <View style={styles.avatar}>
+    <View style={styles.avatarContainer}>
       {user ? (
-        user?.photoUrl ? (
-          <Avatar.Image size={40} source={{ uri: user.photoUrl }} />
+        user.photoUrl ? (
+          <Avatar.Image size={40} source={{ uri: user.photoUrl }} style={styles.avatarStyle} />
         ) : (
           <Avatar.Text
             size={40}
-            label={`${user?.firstName?.charAt(0)?.toUpperCase()}`}
+            label={`${firstNameToUse?.charAt(0)?.toUpperCase() || 'G'}`}
+            style={styles.avatarStyle}
+            labelStyle={styles.avatarLabel}
+            color="#FFFFFF"
           />
         )
       ) : (
         <Avatar.Text
           size={40}
-          label={`${firstName?.charAt(0)?.toUpperCase()}`}
+          label={`${defaultFirstName.charAt(0).toUpperCase()}`}
+          style={styles.avatarStyle}
+          labelStyle={styles.avatarLabel}
+          color="#FFFFFF"
         />
       )}
-      <View>
-        <Text style={styles.text}>{welcome}</Text>
-        <Text>{welcomeApp}</Text>
+      <View style={styles.textBlock}>
+        <Text style={styles.welcomeText}>{welcome}</Text>
+        <Text style={styles.subtitleText}>{welcomeApp}</Text>
       </View>
       <Notification />
     </View>
@@ -40,14 +48,33 @@ export default function AvatarGroup({ user }: User) {
 }
 
 const styles = StyleSheet.create({
-  avatar: {
-    display: "flex",
-    alignItems: "flex-start",
-    justifyContent: "space-between",
-    marginHorizontal: 50,
+  avatarContainer: {
     flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 15,
+    paddingVertical: 10,
+    marginTop: 5,
   },
-  text: {
-    fontSize: 20,
+   avatarStyle: {
+     backgroundColor: '#009c41',
+   },
+   avatarLabel: {
+      fontSize: 20,
+      fontWeight: 'bold',
+   },
+  textBlock: {
+    flex: 1,
+    marginLeft: 12,
+    marginRight: 8,
   },
+  welcomeText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333333',
+  },
+  subtitleText: {
+    fontSize: 13,
+    color: '#666666',
+  }
 });

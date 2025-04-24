@@ -1,10 +1,17 @@
+import React from 'react';
 import { Ionicons } from "@expo/vector-icons";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 export default function Notification() {
   return (
-    <View>
-      <Ionicons name="notifications" size={40} />{" "}
+    <View style={styles.container}>
+      <Ionicons name="notifications-outline" size={30} color="#D32F2F" />
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    padding: 5,
+  }
+});

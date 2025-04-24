@@ -4,7 +4,7 @@ export const getDaysAgo = (date:Date) => {
   const givenDate:any = new Date(date);
   const now:any = new Date();
 
-  const diffInMs = now - givenDate;
+  const diffInMs = givenDate-now;
   const msInDay = 1000 * 60 * 60 * 24;
 
   return Math.floor(diffInMs / msInDay);
