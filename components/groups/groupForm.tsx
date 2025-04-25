@@ -112,14 +112,24 @@ export default function GroupForm({hideModal,refreshAction}:any) {
       updatedFormData.startDate = data.startDate || 'Thursday, May 1, 2025';
       updatedFormData.payoutMethod = data.payoutMethod || 'Mfuatano wa Kujiunga';
     }
- updatedFormData.status = 'active';
+
     setFormData(updatedFormData);
 
     if (currentStep < STEPS.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       try {
-             await Post("groups", updatedFormData, "token");
+             await Post("groups", {name: updatedFormData?.name,
+                 purpose: updatedFormData?.purpose,
+                 description: updatedFormData?.description,
+                 contributionAmount: Number(updatedFormData?.contributionAmount),
+                 frequency: updatedFormData?.frequency,
+                 memberLimit: Number(updatedFormData?.memberLimit),
+                 startDate: updatedFormData?.startDate,
+                 endDate: updatedFormData?.endDate,
+                 payoutMethod: updatedFormData?.payoutMethod,
+                status:'active'
+             }, "token");
              toast(`${updatedFormData?.name} Created Successfully`, "done", `${updatedFormData?.name} Created Successfully`);
              hideModal();
              refreshAction();
@@ -242,7 +252,7 @@ export default function GroupForm({hideModal,refreshAction}:any) {
                       icon={() => <MaterialCommunityIcons name="chevron-down" size={24} color="#757575" />}
                       labelStyle={styles.dropdownButtonLabel}
                     >
-                      {value || "Mchezo wa Pesa"}
+                      {value || "Chagua Dhumuni"}
                     </Button>
                   }
                 >
@@ -472,7 +482,7 @@ export default function GroupForm({hideModal,refreshAction}:any) {
           render={({ field: { onChange, value } }) => (
             <RadioButton.Group onValueChange={(newValue) => { onChange(newValue); setFormData({ ...formData, payoutMethod: newValue }); }} value={value}>
               <View style={styles.radioOption}>
-                <RadioButton value="sequential" label="Mfuatano wa Kujiunga" color="#4CAF50" />
+                <RadioButton value="sequential" color="#4CAF50" />
                 <View style={styles.radioTextContainer}>
                   <Text style={styles.radioLabel}>Mfuatano wa Kujiunga</Text>
                   <Text style={styles.radioDescription}>Wanachama hulipwa kulingana na mfuatano wa kujiunga</Text>
@@ -480,7 +490,7 @@ export default function GroupForm({hideModal,refreshAction}:any) {
               </View>
               <Divider />
               <View style={styles.radioOption}>
-                <RadioButton value="random" label="Bahati Nasibu" color="#4CAF50" />
+                <RadioButton value="random" color="#4CAF50" />
                 <View style={styles.radioTextContainer}>
                   <Text style={styles.radioLabel}>Bahati Nasibu</Text>
                   <Text style={styles.radioDescription}>Wanachama hulipwa kulingana na bahati nasibu</Text>
@@ -488,7 +498,7 @@ export default function GroupForm({hideModal,refreshAction}:any) {
               </View>
               <Divider />
               <View style={styles.radioOption}>
-                <RadioButton value="byNeed" label="Kulingana na Mahitaji" color="#4CAF50" />
+                <RadioButton value="byNeed" color="#4CAF50" />
                 <View style={styles.radioTextContainer}>
                   <Text style={styles.radioLabel}>Kulingana na Mahitaji</Text>
                   <Text style={styles.radioDescription}>Wanachama hulipwa kulingana na mahitaji yao</Text>
@@ -496,7 +506,7 @@ export default function GroupForm({hideModal,refreshAction}:any) {
               </View>
               <Divider />
               <View style={styles.radioOption}>
-                <RadioButton value="custom" label="Utaratibu Maalum" color="#4CAF50" />
+                <RadioButton value="custom" color="#4CAF50" />
                 <View style={styles.radioTextContainer}>
                   <Text style={styles.radioLabel}>Utaratibu Maalum</Text>
                   <Text style={styles.radioDescription}>Wanachama hulipwa kulingana na utaratibu maalum</Text>
