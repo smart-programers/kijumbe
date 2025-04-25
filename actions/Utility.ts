@@ -20,3 +20,43 @@ export const formatDate = (timestamp:Date) => {
   return `${day} ${month} ${year}`;
 };
 
+
+export const renderContributionCycle=(cycle:string)=>{
+  switch(cycle){
+    case "daily":
+      return "Kila Siku";
+
+    case "weekly":
+      return "Kila Wiki";
+
+    
+    case "biweekly":
+      return "Kila Baada ya Wiki Mbili";
+
+    case "monthly":
+      return "Kila Mwezi";
+    
+    default:
+      return "Chagua Mzunguko wa Michango";
+  }
+}
+
+export const renderPaymentArrangement=(val:string)=>{
+  
+  switch(val){
+    case "random":
+      return "Bahati Nasibu";
+    
+    case "sequential":
+      return "Mfuatano wa Kujiunga";
+    
+    case "byNeed":
+      return "Kulingana na Mahitaji";
+    
+    case "custom":
+      return "Utaratibu Maalum";
+    
+    default:
+      return "Utaratibu Maalum";
+  }
+}

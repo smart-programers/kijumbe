@@ -4,7 +4,7 @@ bun install
 ```
 ### To run the Project use 
 ```ts
-bunx expo run:prebuild && bunx expo run:android
+bunx expo prebuild && bunx expo run:android
 ```
 
 ### To build With EAS
