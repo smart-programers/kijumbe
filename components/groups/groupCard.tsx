@@ -1,7 +1,8 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Avatar, Card, ProgressBar, Chip } from 'react-native-paper';
 import { Ionicons } from '@expo/vector-icons';
+import {useRouter} from "expo-router";
 
 
 interface Group {
@@ -36,8 +37,19 @@ export default function GroupCard({ group }: GroupCardProps) {
   const firstLetter = group.name ? group.name.charAt(0).toUpperCase() : 'G';
   const statusStyle = getStatusStyle(group.group_status);
   const progressValue = (group.progress || 0) / 100; 
+  const router =useRouter();
 
+  const handleCardPress = () => {
+    if (group.group_status === 'active' || group.group_status === 'completed') {
+      router.push(`/groupId/${group.id}`);
+    } else {
+      // Optionally, provide some feedback to the user if the group is not active or completed
+      console.log('Cannot navigate. Group status is:', group.group_status);
+      // You could also display a Toast or Alert here
+    }
+  };
   return (
+      <TouchableOpacity onPress={handleCardPress} activeOpacity={0.8}>
     <Card style={styles.card}>
       <Card.Content style={styles.cardContent}>
         <View style={styles.headerRow}>
@@ -83,6 +95,7 @@ export default function GroupCard({ group }: GroupCardProps) {
         </View>
       </Card.Content>
     </Card>
+      </TouchableOpacity>
   );
 }
 

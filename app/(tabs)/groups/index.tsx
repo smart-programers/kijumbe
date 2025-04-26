@@ -207,7 +207,7 @@ export default function VikundiPage({ navigation }: any) {
         renderItem={renderItem}
         ListHeaderComponent={renderHeader}
         style={styles.groupList}
-        recycleItems={true}
+        // recycleItems={true}
         contentContainerStyle={styles.groupListContent}
         ListEmptyComponent={ListEmptyComponent}
         keyExtractor={(item) =>
