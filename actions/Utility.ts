@@ -1,3 +1,4 @@
+import {QueryClient} from "@tanstack/react-query";
 
 
 export const getDaysAgo = (date:Date) => {
@@ -10,6 +11,7 @@ export const getDaysAgo = (date:Date) => {
   return Math.floor(diffInMs / msInDay);
 };
 
+export  const queryClient = new QueryClient();
 export const formatDate = (timestamp:Date) => {
   const date = new Date(timestamp);
   

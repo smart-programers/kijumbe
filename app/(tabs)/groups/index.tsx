@@ -13,6 +13,8 @@ import GroupCard from "@/components/groups/groupCard";
 import { ListRenderItem } from "react-native";
 import { Get } from "@/actions/helpers";
 import GroupModal from "@/components/groups/groupModal";
+import {useQuery, useQueryClient} from "@tanstack/react-query";
+import {queryClient} from "@/actions/Utility";
 
 interface Group {
   id: string;
@@ -95,7 +97,7 @@ type ListItem = FilterItem | GroupItem;
 
 export default function VikundiPage({ navigation }: any) {
   const [activeFilter, setActiveFilter] = useState<FilterStatus>("active");
-  const [groups, setGroups] = useState<Group[]>(MOCK_GROUPS);
+  // const [groups, setGroups] = useState<Group[]>(MOCK_GROUPS);
   const [refreshing, setRefreshing] = useState(false);
   const filters: FilterItem[] = useMemo(
     () => [
@@ -109,23 +111,34 @@ export default function VikundiPage({ navigation }: any) {
     ],
     [],
   );
-  useEffect(() => {
-    async function getData() {
-      const data = await Get("groups", "token");
-      console.log(data.data);
-      if (data?.success === true) {
-        setGroups(data?.data);
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['groups'],
+    queryFn: async () => {
+      try {
+        const data = await Get("groups", "token");
+        return data?.data ?? [];
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        throw err;
       }
-    }
-    getData();
-  }, [refreshing]);
-  
-  const refreshAction = () => setRefreshing(prev => !prev);
+    },
+    refetchOnWindowFocus: false,
+    // refetchInterval: 2000,
+  });
+
+
+
+
+  // @ts-ignore
+  const refreshAction = () => queryClient.invalidateQueries(['groups']);
   const filteredGroups = useMemo(() => {
-    return groups
-      .filter((group) => group.group_status === activeFilter)
-      .map((group) => ({ type: "group", group }));
-  }, [groups, activeFilter]);
+    if (!data) return [];
+    return data
+        .filter((group) => group.group_status === activeFilter)
+        .map((group) => ({ type: "group", group }));
+  }, [data, activeFilter]);
+
 
   const listData: ListItem[] = useMemo(() => {
     return [...filteredGroups];
@@ -133,7 +146,7 @@ export default function VikundiPage({ navigation }: any) {
 
   const renderItem: ListRenderItem<ListItem> = ({ item }) => {
     if (item.type === "group") {
-      return <GroupCard group={item.group} />;
+      return <GroupCard key={item.group.id} group={item.group} />;
     }
     return null;
   };

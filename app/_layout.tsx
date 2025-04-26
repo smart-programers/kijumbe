@@ -8,11 +8,14 @@ import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Provider } from 'react-native-paper';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import {queryClient} from "@/actions/Utility";
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
+
   const colorScheme = useColorScheme();
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
@@ -29,6 +32,7 @@ export default function RootLayout() {
   }
 
   return (
+      <QueryClientProvider client={queryClient}>
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <Provider>
       <Stack>
@@ -42,5 +46,6 @@ export default function RootLayout() {
       <StatusBar style="auto" />
       </Provider>
     </ThemeProvider>
+      </QueryClientProvider>
   );
 }

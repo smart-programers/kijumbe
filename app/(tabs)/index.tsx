@@ -8,6 +8,7 @@ import { useTheme } from 'react-native-paper';
 import GroupList from "@/components/home/groupList";
 import { useEffect, useState } from "react";
 import { Get } from "@/actions/helpers";
+import {useQuery} from "@tanstack/react-query";
 
 export default function GroupPage(){
    const colorScheme = useColorScheme();
@@ -18,24 +19,28 @@ export default function GroupPage(){
     details: [],
     upcoming: [],
   });
-  
-  useEffect(()=>{
-    async function getData(){
-      const data = await Get("user","token")
-        console.log(data.data)
-      if(data?.success===true){
-  
-    setUserData(data?.data)
+
+  const { data, isLoading, error } = useQuery({
+    queryKey: ['homepage'],
+    queryFn: async () => {
+      try {
+        const data = await Get("user","token")
+        return data?.data;
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        throw err;
       }
-    }
-    getData()
-  },[])
+    },
+    refetchOnWindowFocus: false,
+    // refetchInterval: 2000,
+  });
+
   return(
     <SafeAreaView  style={{ backgroundColor: isDarkMode ? theme.colors.background : theme.colors.surface }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-      <AvatarGroup user={userData?.user}/>
-        <GroupDashboard details={userData?.details} />
-      <GroupList groups={userData?.upcoming}/>
+      <AvatarGroup user={data?.user}/>
+        <GroupDashboard details={data?.details} />
+      <GroupList groups={data?.upcoming}/>
     </ScrollView>
     </SafeAreaView>
   )

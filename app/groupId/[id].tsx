@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import { View, StyleSheet, ScrollView, Dimensions } from 'react-native';
+import {View, StyleSheet, ScrollView, Dimensions, FlatList} from 'react-native';
 import {
     Appbar,
     Card,
@@ -11,12 +11,18 @@ import {
     MD3LightTheme,
     useTheme,
     Icon, FAB, IconButton,
+    Avatar,
 
 } from 'react-native-paper';
 import { useForm } from 'react-hook-form';
 import Constants from 'expo-constants';
 import { TabView, TabBar } from 'react-native-tab-view';
 import {Ionicons} from "@expo/vector-icons";
+import {useQuery} from "@tanstack/react-query";
+import {Get, GetById, GetQuery} from "@/actions/helpers";
+import {useLocalSearchParams, useRouter} from "expo-router";
+import {LegendList} from "@legendapp/list";
+import {renderContributionCycle} from "@/actions/Utility";
 
 
 const defaultTheme = {
@@ -38,7 +44,7 @@ const defaultTheme = {
 };
 
 
-const MichangoTab = ({ paperTheme }:any) => {
+const MichangoTab = ({ paperTheme,data }:any) => {
 
     const themeToUse = paperTheme || defaultTheme;
     return (
@@ -109,7 +115,7 @@ const MichangoTab = ({ paperTheme }:any) => {
     );
 };
 
-const WanachamaTab = ({ paperTheme }:any) => {
+const WanachamaTab = ({ paperTheme,data }:any) => {
     const themeToUse = paperTheme || defaultTheme;
     return (
         <ScrollView contentContainerStyle={styles.scrollContainerTab}>
@@ -119,7 +125,12 @@ const WanachamaTab = ({ paperTheme }:any) => {
                     <Card.Content style={styles.cardContent}>
                         <Icon source="cash" size={20} color={'#009c41'}/>
                         <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mchango</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>TZS 1,000</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{data?.contributionAmount?.toLocaleString('sw-TZ', {
+                            style: 'currency',
+                            currency: 'TZS',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                        }) ?? 'TZS 1,000'}</Text>
                     </Card.Content>
                 </Card>
 
@@ -127,14 +138,14 @@ const WanachamaTab = ({ paperTheme }:any) => {
                     <Card.Content style={styles.cardContent}>
                         <Icon source="calendar-clock" size={20} color={'#009c41'}/>
                         <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mzunguko</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>Kila Siku</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
                         <Icon source="account-group-outline" size={20} color={'#009c41'} />
                         <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Wanachama</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>0/10</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}> {data?.approved_member_count ?? 0}/{data?.memberLimit ?? 10}</Text>
                     </Card.Content>
                 </Card>
             </View>
@@ -169,17 +180,53 @@ const WanachamaTab = ({ paperTheme }:any) => {
                 </View>
             </View>
 
+            {(data?.approved_members && data.approved_members.length > 0) ? (
+            <LegendList
+            data={data.approved_members}
+            keyExtractor={(item:any, index:number) => index.toString()}
+            renderItem={({ item, index }:{item:any,index:number}) => (
+                <Card style={styles.memberCard}>
+                    <Card.Content style={styles.memberCardContent}>
+                        {item?.user?.photoUrl ? (
+                        <Avatar.Image
+                            size={48}
+                            source={item?.user?.photoUrl || "https://via.placeholder.com/150"}
+                            style={styles.memberAvatar}
+                        />):(
+                            <Avatar.Text
+                                size={40}
+                                label={`${item?.user?.firstName?.charAt(0)?.toUpperCase() || 'G'}`}
+                                style={styles.memberAvatar}
+                                // labelStyle={styles.avatarLabel}
+                                color="#FFFFFF"
+                            />)}
+                        <View style={styles.memberInfo}>
+                            <Text variant="titleMedium" style={{ color: themeToUse.colors.onSurface }}>
+                                {item.user?.firstName} {item.user?.lastName}
+                            </Text>
+                            <Text variant="bodyMedium" style={{ color: themeToUse.colors.onSurfaceVariant }}>
+                                {item.role ? `(${item.role})` : item.user?.phoneNumber}
+                            </Text>
+                        </View>
+                    </Card.Content>
+                    {index < data.approved_members.length - 1 && <Divider />}
+                </Card>
+            )}
+            contentContainerStyle={styles.flatListContentContainer}
+        />
+    ):(
             <View style={styles.placeholderContainer}>
                 <Icon source="account-multiple-plus-outline" size={60} color={themeToUse.colors.onSurfaceDisabled} />
                 <Text variant="titleMedium" style={[styles.placeholderTitle, { color: themeToUse.colors.onSurface }]}>Hakuna wanachama katika kikundi hiki</Text>
                 <Text variant="bodyMedium" style={[styles.placeholderSubtitle, { color: themeToUse.colors.onSurfaceDisabled }]}>Anzia kwa kuongeza wanachama</Text>
             </View>
+            )}
         </ScrollView>
     );
 };
 
 
-const MalipoTab = ({ paperTheme }:any) => {
+const MalipoTab = ({ paperTheme,data }:any) => {
     const themeToUse = paperTheme || defaultTheme;
     return (
         <ScrollView contentContainerStyle={styles.scrollContainerTab}>
@@ -201,7 +248,26 @@ export default function GroupScreen (){
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorLayout, setAnchorLayout] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
     const anchorRef = useRef<any>(null);
+    const { id }: any = useLocalSearchParams();
+    const { data, isLoading, error } = useQuery({
+        queryKey: ['groupId',id],
+        queryFn: async () => {
+            try {
+                const data = await GetById("groups",id,"token")
 
+                return data ?? null;
+            } catch (err) {
+                console.error('Error fetching data:', err);
+                throw err;
+            }
+        },
+        enabled: !!id,
+        refetchOnWindowFocus: false,
+        // refetchInterval: 2000,
+    });
+
+    const title = data?.name ?? "Mchezo wa Biashara"
+    console.log("data",id,data)
     const openMenu = () => {
         anchorRef.current?.measure((fx: number, fy: number, width: number, height: number, px: number, py: number) => {
             setAnchorLayout({ x: px, y: py + height, width, height });
@@ -237,17 +303,17 @@ export default function GroupScreen (){
         switch (route.key) {
             case 'wanachama':
 
-                return <WanachamaTab paperTheme={paperTheme} />;
+                return <WanachamaTab paperTheme={paperTheme} data={data}/>;
             case 'michango':
-                return <MichangoTab paperTheme={paperTheme} />;
+                return <MichangoTab paperTheme={paperTheme} data={data}/>;
             case 'malipo':
-                return <MalipoTab paperTheme={paperTheme} />;
+                return <MalipoTab paperTheme={paperTheme} data={data}/>;
             default:
                 return null;
         }
     };
 
-
+const router = useRouter()
     const renderTabBar = (props:any) => (
         <TabBar
             {...props}
@@ -268,8 +334,8 @@ export default function GroupScreen (){
                 style={{ backgroundColor: paperTheme.colors.surface }}
                 statusBarHeight={Constants.statusBarHeight}
             >
-                <Appbar.BackAction onPress={() => console.log('Back Pressed')} />
-                <Appbar.Content title="Mchezo wa Biashara" titleStyle={styles.appBarTitle} />
+                <Appbar.BackAction onPress={() => router.back()} />
+                <Appbar.Content title={title} titleStyle={styles.appBarTitle} />
                 <IconButton
                     ref={anchorRef}
                     icon="dots-vertical"
@@ -460,6 +526,26 @@ const styles = StyleSheet.create({
         bottom: 0,
         backgroundColor: '#009c41',
         borderRadius: 28,
+    },
+    flatListContentContainer: {
+        padding: 16,
+    },
+    memberCard: {
+        marginVertical: 8,
+        borderRadius: 8,
+        backgroundColor: '#FFFFFF',
+        elevation: 1,
+    },
+    memberCardContent: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingVertical: 12,
+    },
+    memberAvatar: {
+        marginRight: 16,
+    },
+    memberInfo: {
+        flex: 1,
     },
 });
 

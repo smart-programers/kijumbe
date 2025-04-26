@@ -17,8 +17,10 @@ const STEPS = [
 ];
 
 export default function GroupForm({hideModal,refreshAction}:any) {
-  const [currentStep, setCurrentStep] = useState(0);
-  const router = useRouter()
+    const startDate = new Date().toISOString().split('T')[0];
+
+    const [currentStep, setCurrentStep] = useState(0);
+
   const [formData, setFormData] = useState({
     name: '',
     purpose: '',
@@ -26,16 +28,8 @@ export default function GroupForm({hideModal,refreshAction}:any) {
     contributionAmount: '',
     frequency: '',
     memberLimit: '',
-    startDate: new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }),
-    endDate: new Date().toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'numeric',
-      day: 'numeric',
-    }),
+    startDate: startDate,
+    endDate:startDate,
     payoutMethod: 'sequential',
   });
 

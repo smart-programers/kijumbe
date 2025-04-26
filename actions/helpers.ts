@@ -65,6 +65,37 @@ export async function Pagination(endpoint:string,page: number = 1) {
       console.log(error);
     }
   }
+
+export async function GetById(endpoint: string, id: string, key: any) {
+  try {
+    const token = await getCombinationKey(key);
+
+    if (!token) return null;
+
+    const url = `${BaseUrl}/${endpoint}/${id}`;
+    const res = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    });
+
+    if (!res.ok) {
+      console.error(`Failed to fetch ${url} | Status: ${res.status}`);
+      return null;
+    }
+
+    const data = await res.json();
+    console.log("Parsed response:", data);
+    return data ?? null;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    return null;
+  }
+}
+
   
   export async function Post(endpoint:string,userData:any,bearer:string){
     const token = await getCombinationKey(bearer);
