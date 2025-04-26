@@ -18,6 +18,11 @@ eas build --platform android --profile preview
 eas build --platform android --profile production
 ```
 
+## Build Locally With EAS
+```ts 
+eas build --profile development --platform android --local
+```
+
 [To build locally visit]
 (https://docs.expo.dev/build-reference/local-builds/)
 
