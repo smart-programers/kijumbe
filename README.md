@@ -22,6 +22,17 @@ eas build --platform android --profile production
 ```ts 
 eas build --profile development --platform android --local
 ```
+In eas.json
+```ts 
+"production": {
+     "android": {
+       "buildType": "apk"
+     }
+   }
+```
+```ts
+eas build --local --platform android --profile production
+```
 
 [To build locally visit]
 (https://docs.expo.dev/build-reference/local-builds/)
