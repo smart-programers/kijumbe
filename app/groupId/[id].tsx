@@ -53,23 +53,28 @@ const MichangoTab = ({ paperTheme,data }:any) => {
             <View style={styles.cardRow}>
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
-                        <Icon source="cash" size={20} color={themeToUse.colors.primary} />
+                        <Icon source="cash" size={20} color={'#009c41'} />
                         <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mchango</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>TZS 1,000</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{data?.contributionAmount?.toLocaleString('sw-TZ', {
+                            style: 'currency',
+                            currency: 'TZS',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 0,
+                        }) ?? 'TZS 1,000'}</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
-                        <Icon source="calendar-clock" size={20} color={themeToUse.colors.primary}/>
+                        <Icon source="calendar-clock" size={20} color={'#009c41'}/>
                         <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mzunguko</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>Kila Siku</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
-                        <Icon source="account-group-outline" size={20} color={themeToUse.colors.primary} />
+                        <Icon source="account-group-outline" size={20} color={'#009c41'} />
                         <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Wanachama</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>0/10</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{data?.approved_member_count ?? 0}/{data?.memberLimit ?? 10}</Text>
                     </Card.Content>
                 </Card>
             </View>
@@ -138,7 +143,7 @@ const WanachamaTab = ({ paperTheme,data }:any) => {
                     <Card.Content style={styles.cardContent}>
                         <Icon source="calendar-clock" size={20} color={'#009c41'}/>
                         <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mzunguko</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.infoCard]}>
@@ -187,19 +192,12 @@ const WanachamaTab = ({ paperTheme,data }:any) => {
             renderItem={({ item, index }:{item:any,index:number}) => (
                 <Card style={styles.memberCard}>
                     <Card.Content style={styles.memberCardContent}>
-                        {item?.user?.photoUrl ? (
+
                         <Avatar.Image
                             size={48}
-                            source={item?.user?.photoUrl || "https://via.placeholder.com/150"}
-                            style={styles.memberAvatar}
-                        />):(
-                            <Avatar.Text
-                                size={40}
-                                label={`${item?.user?.firstName?.charAt(0)?.toUpperCase() || 'G'}`}
-                                style={styles.memberAvatar}
-                                // labelStyle={styles.avatarLabel}
-                                color="#FFFFFF"
-                            />)}
+                            source={{uri:item?.user?.photoUrl || "https://via.placeholder.com/150"}}
+                            // style={styles.memberAvatar}
+                        />
                         <View style={styles.memberInfo}>
                             <Text variant="titleMedium" style={{ color: themeToUse.colors.onSurface }}>
                                 {item.user?.firstName} {item.user?.lastName}
