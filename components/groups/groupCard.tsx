@@ -43,9 +43,7 @@ export default function GroupCard({ group }: GroupCardProps) {
     if (group.group_status === 'active' || group.group_status === 'completed') {
       router.push(`/groupId/${group.id}`);
     } else {
-      // Optionally, provide some feedback to the user if the group is not active or completed
       console.log('Cannot navigate. Group status is:', group.group_status);
-      // You could also display a Toast or Alert here
     }
   };
   return (

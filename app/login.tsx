@@ -41,7 +41,7 @@ export default function HomeScreen() {
                     );
                     reset();
                     router.push("/(tabs)");
-                    console.log(data);
+
                 }
             })
             .catch((error) => {

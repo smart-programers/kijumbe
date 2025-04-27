@@ -18,11 +18,12 @@ import { useForm } from 'react-hook-form';
 import Constants from 'expo-constants';
 import { TabView, TabBar } from 'react-native-tab-view';
 import {Ionicons} from "@expo/vector-icons";
-import {useQuery} from "@tanstack/react-query";
-import {Get, GetById, GetQuery} from "@/actions/helpers";
+import {useMutation, useQuery} from "@tanstack/react-query";
+import {Get, GetById, GetQuery, Patch, Post} from "@/actions/helpers";
 import {useLocalSearchParams, useRouter} from "expo-router";
 import {LegendList} from "@legendapp/list";
-import {renderContributionCycle} from "@/actions/Utility";
+import {queryClient, renderContributionCycle} from "@/actions/Utility";
+import toast from "@/actions/toast";
 
 
 const defaultTheme = {
@@ -238,6 +239,70 @@ const MalipoTab = ({ paperTheme,data }:any) => {
     );
 };
 
+const MaombiTab = ({ paperTheme, data }: any) => {
+    const themeToUse = paperTheme || defaultTheme;
+
+    const handleAccept = useMutation({
+        mutationFn: (user: any) => Patch("member-request", user.member_id, { status: "approved" }, "token"),
+        onSuccess: (data, variables) => {
+            toast(`${variables?.firstName} Added to Group Successfully`, "done", `${variables?.firstName} Added to Group Successfully`);
+            queryClient.invalidateQueries(["groupId", data?.group_id]);
+        },
+    });
+
+    return (
+        <ScrollView contentContainerStyle={styles.scrollContainerTab}>
+            {(data?.waiting_requests && data?.waiting_requests.length > 0) ? (
+                <LegendList
+                    data={data?.waiting_requests}
+                    keyExtractor={(item: any, index: number) => index.toString()}
+                    renderItem={({ item, index }: { item: any, index: number }) => (
+                        <Card style={styles.memberCard}>
+                            <Card.Content style={styles.memberCardContent}>
+                                <Avatar.Image
+                                    size={48}
+                                    source={{ uri: item?.user?.photoUrl || "https://via.placeholder.com/150" }}
+                                />
+                                <View style={styles.memberInfo}>
+                                    <Text variant="titleMedium" style={{ color: themeToUse.colors.onSurface }}>
+                                        {item.user?.firstName} {item.user?.lastName}
+                                    </Text>
+                                    <Text variant="bodyMedium" style={{ color: themeToUse.colors.onSurfaceVariant }}>
+                                        {item.role ? `(${item.role})` : item.user?.phoneNumber}
+                                    </Text>
+                                </View>
+                            </Card.Content>
+
+                            {data?.current_user_role === 'admin' && (
+                                <Button
+                                    mode="contained"
+                                    style={[styles.kubaliButton, { backgroundColor: '#009c41' }]}
+                                    onPress={() => {
+
+                                        handleAccept.mutate(item.user);
+                                    }}
+                                >
+                                    Kubali
+                                </Button>
+                            )}
+
+                            {index < data?.waiting_requests.length - 1 && <Divider />}
+                        </Card>
+                    )}
+                    contentContainerStyle={styles.flatListContentContainer}
+                />
+            ) : (
+                <View style={styles.placeholderContainer}>
+                    <Icon source="account-multiple-plus-outline" size={60} color={themeToUse.colors.onSurfaceDisabled} />
+                    <Text variant="titleMedium" style={[styles.placeholderTitle, { color: themeToUse.colors.onSurface }]}>
+                        Hakuna maombi ya uanachama
+                    </Text>
+                </View>
+            )}
+        </ScrollView>
+    );
+};
+
 
 
 export default function GroupScreen (){
@@ -287,12 +352,13 @@ export default function GroupScreen (){
         { key: 'wanachama', title: 'Wanachama' },
         { key: 'michango', title: 'Michango' },
         { key: 'malipo', title: 'Malipo' },
+        { key: 'maombi', title: 'Maombi' },
     ]);
 
 
     const closeMenu = () => setMenuVisible(false);
     const handleEditGroup = () => { console.log('Edit Group'); closeMenu(); };
-    const handleViewTerms = () => { console.log('View Terms'); closeMenu(); };
+    const handleViewTerms = () => {router.push(`/rules/${id}`); closeMenu(); };
     const handleLeaveGroup = () => { console.log('Leave Group'); closeMenu(); };
     const onSubmit = async(data:any) => { console.log('Lipa Mchango Pressed. Form Data:', data); };
 
@@ -306,6 +372,8 @@ export default function GroupScreen (){
                 return <MichangoTab paperTheme={paperTheme} data={data}/>;
             case 'malipo':
                 return <MalipoTab paperTheme={paperTheme} data={data}/>;
+            case 'maombi':
+                return <MaombiTab paperTheme={paperTheme} data={data}/>;
             default:
                 return null;
         }
@@ -504,6 +572,11 @@ const styles = StyleSheet.create({
         paddingVertical: 12,
         paddingHorizontal: 16,
         borderTopWidth: 1,
+    },
+    kubaliButton: {
+        marginVertical: 10,
+        marginHorizontal: 16,
+        borderRadius: 8,
     },
     payButton: {
         borderRadius: 50,

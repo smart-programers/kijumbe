@@ -120,12 +120,12 @@ export async function GetById(endpoint: string, id: string, key: any) {
   }
   
   
-  export async function Patch(endpoint:string,userData:any,bearer:string){
+  export async function Patch(endpoint:string,id:string,userData:any,bearer:string){
     const token = await getCombinationKey(bearer);
   
        if (!token) return []
     try{
-      const response = await axios.patch(`${BaseUrl}/${endpoint}`, userData
+      const response = await axios.patch(`${BaseUrl}/${endpoint}/${id}`, userData
     , {
         headers: {
             Authorization: `Bearer ${token}`
@@ -142,20 +142,16 @@ export async function GetById(endpoint: string, id: string, key: any) {
     
   }
   
-  export async function Delete(endpoint: string, userData: any, bearer: string) {
+  export async function Delete(endpoint: string, id: string, bearer: string) {
     const token = await getCombinationKey(bearer);
   
        if (!token) return []
     try {
-      const response = await axios.delete(
-        `${BaseUrl}/${endpoint}`, 
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          data: { id: userData }, 
-        }
-      );
+      const response = await axios.delete(`${BaseUrl}/${endpoint}/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
   
       if (response.status === 200) {
         return { data: response, success: true };

@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import { View, StyleSheet, Text } from "react-native";
 import { Card, Text as TextPaper } from "react-native-paper";
 import { Ionicons } from "@expo/vector-icons";
+import {Link} from "expo-router";
 
 export default function GroupDashboard({ details }: { details: any[] }) {
   const title = "Jumla ya Akiba";
@@ -110,19 +111,24 @@ export default function GroupDashboard({ details }: { details: any[] }) {
             <Text style={styles.shortcutText}>{pay}</Text>
           </View>
 
+          <Link href={"/groups"}>
           <View style={styles.shortcutItem}>
             <View style={styles.iconCircle}>
               <Ionicons name="people-outline" size={26} color={"#B8860B"} />
             </View>
             <Text style={styles.shortcutText}>{groupAction}</Text>
           </View>
+          </Link>
 
+          <Link href={"/group"}>
           <View style={styles.shortcutItem}>
+
             <View style={styles.iconCircle}>
               <Ionicons name="person-add-outline" size={26} color={"#4682B4"} />
             </View>
             <Text style={styles.shortcutText}>{joinGroup}</Text>
           </View>
+          </Link>
 
           <View style={styles.shortcutItem}>
             <View style={styles.iconCircle}>
