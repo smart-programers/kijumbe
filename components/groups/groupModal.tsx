@@ -11,7 +11,7 @@ export default function GroupModal({refreshAction}:{refreshAction: () => void })
   const [visible, setVisible] = useState(false);
   const [loading, setIsLoading] = useState(false);
   const theme = useTheme();
-  
+
   const {
     handleSubmit,
     reset,
@@ -25,20 +25,6 @@ export default function GroupModal({refreshAction}:{refreshAction: () => void })
 
   const showModal = () => setVisible(true);
   const hideModal = () => setVisible(false);
-
-  const onSubmit = async (data) => {
-    setIsLoading(true);
-    try {
-      console.log("Form data:", data);
-     
-      hideModal();
-      reset();
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   return (
     <View>
@@ -94,7 +80,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
     borderTopLeftRadius: 20,
     borderTopRightRadius: 20,
-    height: height * 0.9, // Take up 90% of screen height
+    height: height * 0.9,
     paddingBottom: 20,
   },
   handle: {
