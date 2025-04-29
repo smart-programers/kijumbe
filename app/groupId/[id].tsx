@@ -24,7 +24,7 @@ import {useLocalSearchParams, useRouter} from "expo-router";
 import {LegendList} from "@legendapp/list";
 import {queryClient, renderContributionCycle} from "@/actions/Utility";
 import toast from "@/actions/toast";
-
+import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 
 const defaultTheme = {
     ...MD3LightTheme,
@@ -55,8 +55,8 @@ const MichangoTab = ({ paperTheme,data }:any) => {
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
                         <Icon source="cash" size={20} color={'#009c41'} />
-                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mchango</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{data?.contributionAmount?.toLocaleString('sw-TZ', {
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: 'black' }]}>Mchango</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: 'black' }]}>{data?.contributionAmount?.toLocaleString('sw-TZ', {
                             style: 'currency',
                             currency: 'TZS',
                             minimumFractionDigits: 0,
@@ -67,15 +67,15 @@ const MichangoTab = ({ paperTheme,data }:any) => {
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
                         <Icon source="calendar-clock" size={20} color={'#009c41'}/>
-                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mzunguko</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: 'black' }]}>Mzunguko</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: 'black' }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
                         <Icon source="account-group-outline" size={20} color={'#009c41'} />
-                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Wanachama</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{data?.approved_member_count ?? 0}/{data?.memberLimit ?? 10}</Text>
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: 'black' }]}>Wanachama</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: 'black' }]}>{data?.approved_member_count ?? 0}/{data?.memberLimit ?? 10}</Text>
                     </Card.Content>
                 </Card>
             </View>
@@ -84,20 +84,20 @@ const MichangoTab = ({ paperTheme,data }:any) => {
             <View style={styles.cardRow}>
                 <Card style={[styles.summaryCard]}>
                     <Card.Content style={styles.summaryCardContent}>
-                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: themeToUse.colors.onSecondaryContainer }]}>Jumla ya Michango</Text>
-                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: themeToUse.colors.onSecondaryContainer }]}>TZS 0</Text>
+                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: 'black' }]}>Jumla ya Michango</Text>
+                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: 'black' }]}>TZS 0</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.summaryCard]}>
                     <Card.Content style={styles.summaryCardContent}>
-                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: themeToUse.colors.onSecondaryContainer }]}>Jumla ya Malipo</Text>
-                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: themeToUse.colors.onSecondaryContainer }]}>TZS 0</Text>
+                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: 'black' }]}>Jumla ya Malipo</Text>
+                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: 'black' }]}>TZS 0</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.summaryCard]}>
                     <Card.Content style={styles.summaryCardContent}>
-                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: themeToUse.colors.onSecondaryContainer }]}>Salio la Sasa</Text>
-                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: themeToUse.colors.onSecondaryContainer }]}>TZS 0</Text>
+                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: 'black' }]}>Salio la Sasa</Text>
+                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: 'black' }]}>TZS 0</Text>
                     </Card.Content>
                 </Card>
             </View>
@@ -130,8 +130,8 @@ const WanachamaTab = ({ paperTheme,data }:any) => {
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
                         <Icon source="cash" size={20} color={'#009c41'}/>
-                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mchango</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}>{data?.contributionAmount?.toLocaleString('sw-TZ', {
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: 'black' }]}>Mchango</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: 'black' }]}>{data?.contributionAmount?.toLocaleString('sw-TZ', {
                             style: 'currency',
                             currency: 'TZS',
                             minimumFractionDigits: 0,
@@ -143,15 +143,15 @@ const WanachamaTab = ({ paperTheme,data }:any) => {
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
                         <Icon source="calendar-clock" size={20} color={'#009c41'}/>
-                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Mzunguko</Text>
-                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: 'black' }]}>Mzunguko</Text>
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: 'black' }]}>{renderContributionCycle(data?.frequency) ?? "Kila Siku"}</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.infoCard]}>
                     <Card.Content style={styles.cardContent}>
                         <Icon source="account-group-outline" size={20} color={'#009c41'} />
-                        <Text variant="labelMedium" style={[styles.cardTitle, { color: themeToUse.colors.onSurfaceVariant }]}>Wanachama</Text>
-                        <Text variant="titleMedium" style={[styles.cardValue, { color: themeToUse.colors.onSurfaceVariant }]}> {data?.approved_member_count ?? 0}/{data?.memberLimit ?? 10}</Text>
+                        <Text variant="labelMedium" style={[styles.cardTitle, { color: 'black' }]}>Wanachama</Text>
+                        <Text variant="titleMedium" style={[styles.cardValue, { color: 'black' }]}> {data?.approved_member_count ?? 0}/{data?.memberLimit ?? 10}</Text>
                     </Card.Content>
                 </Card>
             </View>
@@ -159,21 +159,21 @@ const WanachamaTab = ({ paperTheme,data }:any) => {
             <View style={styles.cardRow}>
                 <Card style={[styles.summaryCard]}>
                     <Card.Content style={styles.summaryCardContent}>
-                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: themeToUse.colors.onSecondaryContainer }]}>Jumla ya Michango</Text>
-                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: themeToUse.colors.onSecondaryContainer }]}>TZS 0</Text>
+                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: 'black' }]}>Jumla ya Michango</Text>
+                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: 'black' }]}>TZS 0</Text>
                     </Card.Content>
                 </Card>
                 {/* ... other cards ... */}
                 <Card style={[styles.summaryCard]}>
                     <Card.Content style={styles.summaryCardContent}>
-                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: themeToUse.colors.onSecondaryContainer }]}>Jumla ya Malipo</Text>
-                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: themeToUse.colors.onSecondaryContainer }]}>TZS 0</Text>
+                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: 'black' }]}>Jumla ya Malipo</Text>
+                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: 'black' }]}>TZS 0</Text>
                     </Card.Content>
                 </Card>
                 <Card style={[styles.summaryCard]}>
                     <Card.Content style={styles.summaryCardContent}>
-                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: themeToUse.colors.onSecondaryContainer }]}>Salio la Sasa</Text>
-                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: themeToUse.colors.onSecondaryContainer }]}>TZS 0</Text>
+                        <Text variant="labelMedium" style={[styles.summaryCardTitle, { color: 'black' }]}>Salio la Sasa</Text>
+                        <Text variant="titleMedium" style={[styles.summaryCardValue, { color: 'black' }]}>TZS 0</Text>
                     </Card.Content>
                 </Card>
             </View>
@@ -200,15 +200,15 @@ const WanachamaTab = ({ paperTheme,data }:any) => {
                             // style={styles.memberAvatar}
                         />
                         <View style={styles.memberInfo}>
-                            <Text variant="titleMedium" style={{ color: themeToUse.colors.onSurface }}>
+                            <Text  style={{  color: 'black'  }}>
                                 {item.user?.firstName} {item.user?.lastName}
                             </Text>
-                            <Text variant="bodyMedium" style={{ color: themeToUse.colors.onSurfaceVariant }}>
+                            <Text variant="bodyMedium" style={{ color: 'black' }}>
                                 {item.role ? `(${item.role})` : item.user?.phoneNumber}
                             </Text>
                         </View>
                     </Card.Content>
-                    {index < data.approved_members.length - 1 && <Divider />}
+
                 </Card>
             )}
             contentContainerStyle={styles.flatListContentContainer}
@@ -330,7 +330,7 @@ export default function GroupScreen (){
     });
 
     const title = data?.name ?? "Mchezo wa Biashara"
-    console.log("data",id,data)
+
     const openMenu = () => {
         anchorRef.current?.measure((fx: number, fy: number, width: number, height: number, px: number, py: number) => {
             setAnchorLayout({ x: px, y: py + height, width, height });
@@ -385,7 +385,7 @@ const router = useRouter()
             {...props}
             indicatorStyle={{ backgroundColor: '#009c41' }}
             style={{ backgroundColor: paperTheme.colors.surface }}
-            labelStyle={{ color: paperTheme.colors.onSurface, textTransform: 'none', fontWeight: '600' }}
+            labelStyle={{ color: paperTheme.colors.onSurface, textTransform: 'none', fontWeight: '600',fontSize: wp('3.5%') }}
             activeColor={'#009c41'}
             inactiveColor={paperTheme.colors.onSurfaceVariant}
         />
@@ -461,7 +461,7 @@ const router = useRouter()
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: defaultTheme.colors.surface,
+        // backgroundColor: defaultTheme.colors.surface,
     },
     appBarTitle: {
         fontSize: 18,
