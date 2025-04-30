@@ -258,7 +258,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#FFFFFF",
         // borderBottomWidth: 1,
         // borderBottomColor: '#E0E0E0',
-        paddingVertical: 20,
+        paddingVertical: 30,
         // margin: 10
     },
     filterList: {

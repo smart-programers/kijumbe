@@ -104,10 +104,10 @@ const ProfileScreen = () => {
     } = useForm({
 
         defaultValues: {
-            firstName: data?.firstName,
-            lastName: data?.lastName,
-            email: data?.email,
-            photoUrl: data?.photoUrl,
+            firstName: '',
+            lastName: '',
+            email: '',
+            photoUrl: '',
 
         },
     });
@@ -119,6 +119,12 @@ const ProfileScreen = () => {
 
     useEffect(() => {
         if (dialogVisible) {
+            reset({
+                firstName: data?.firstName,
+                lastName: data?.lastName,
+                email: data?.email,
+                photoUrl: data?.photoUrl,
+            });
 
             const parsedPhoneNumber = parsePhoneNumberFromString(data?.phoneNumber);
 
@@ -126,7 +132,7 @@ const ProfileScreen = () => {
             setFormCountryCode(parsedPhoneNumber?.country?.callingCode || userData.phoneCountryCode || 'TZ');
             setSelectedImage(null);
         }
-    }, [dialogVisible, data]);
+    }, [dialogVisible, data, reset]);
 
     const pickImage = async () => {
 
@@ -163,7 +169,7 @@ const ProfileScreen = () => {
         let finalPhotoUrl = userData.photoUrl;
 
         const {dialCode} = getCountryByCode(formCountryCode);
-        console.log(formPhoneNumber)
+
         const phone = formPhoneNumber.startsWith("0") ? formPhoneNumber.slice(1):formPhoneNumber;
         const fullPhoneNumber = `${dialCode}${phone}`;
 
