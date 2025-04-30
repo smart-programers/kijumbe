@@ -70,10 +70,11 @@ export default function HomeScreen() {
   const onSubmit = async (data: any) => {
     setIsLoading(true);
     try {
+      const phone = phoneNumber?.startsWith("0") ? phoneNumber?.slice(1):phoneNumber;
       const registrationData = {
         ...data,
         photoUrl: "",
-        phoneNumber: `${dialCode}${""}${phoneNumber}`,
+        phoneNumber: `${dialCode}${""}${phone}`,
       };
 
       const response = await axios.post(
