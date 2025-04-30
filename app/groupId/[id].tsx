@@ -375,7 +375,12 @@ export default function GroupScreen (){
     const showLeaveGroupAlert = () => {
         Alert.alert(
             'Ondoka Kwenye Kikundi',
-            `Ondoka Katika kikundi cha ${data?.name}?`,
+            `Je, unahitaji kuondoka kwenye hiki kikundi? Kumbuka kua Unapo indoka kwenye kikundi hiki utapoteza Moja Kwa Moja sifa za kua mwanachama katika kikundi hiki.
+Je, ni taarifa zipi muhuni kwangu tapoteza?
+Taarifa Muhimu Utakazo poteza baada ya kuondoka kwenye kikundi hiki ni pamoja na pesa ambazo ulikua umesha changia , Historia ya Michango pamoja na shughuri zote ulizo fanya katika kikundi hiki zote Zita toeka .
+Hivyo Huta weza Kurudishiwa chochote utakacho poteza baada ya kuondoka kwenye kikundi.
+Asante Kwa usikivu na tuna kutakia laheri huko uendako
+Bonyeza NDIYO Ili kuondoka kwenye kikundi`,
             [
                 {
                     text: 'Ghairi',
