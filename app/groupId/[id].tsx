@@ -1,5 +1,5 @@
 import React, {useRef, useState} from 'react';
-import {View, StyleSheet, ScrollView, Dimensions, FlatList} from 'react-native';
+import {View, StyleSheet, ScrollView, Dimensions, FlatList, Alert} from 'react-native';
 import {
     Appbar,
     Card,
@@ -25,6 +25,7 @@ import {LegendList} from "@legendapp/list";
 import {queryClient, renderContributionCycle} from "@/actions/Utility";
 import toast from "@/actions/toast";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const defaultTheme = {
     ...MD3LightTheme,
@@ -111,12 +112,40 @@ const MichangoTab = ({ paperTheme,data }:any) => {
                 </View>
             </View>
 
+            {data?.upcoming_payments.length > 0 ? (
+                <LegendList
+                    data={data.upcoming_payments}
+                    keyExtractor={(item, index) => index.toString()}
+                    renderItem={({ item }) => {
+                        const date = new Date(item);
+                        const formatted = date.toLocaleDateString(undefined, {
+                            year: 'numeric',
+                            month: 'long',
+                            day: 'numeric',
+                        });
 
+                        return (
+                            <Card style={{ marginVertical: 6, marginHorizontal: 10, elevation: 2 }}>
+                                <Card.Content style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                    <MaterialIcons
+                                        name="calendar-today"
+                                        size={20}
+                                        color="#6200ee"
+                                        style={{ marginRight: 10 }}
+                                    />
+                                    <Text>{formatted}</Text>
+                                </Card.Content>
+                            </Card>
+                        );
+                    }}
+                />
+            ):(
             <View style={styles.placeholderContainer}>
                 <Icon source="file-multiple-outline" size={60} color={themeToUse.colors.onSurfaceDisabled} />
                 <Text variant="titleMedium" style={[styles.placeholderTitle, { color: themeToUse.colors.onSurface }]}>Hakuna malipo yaliyopangwa</Text>
                 <Text variant="bodyMedium" style={[styles.placeholderSubtitle, { color: themeToUse.colors.onSurfaceDisabled }]}>Ratiba ya malipo itaonekana hapa</Text>
             </View>
+                )}
         </ScrollView>
     );
 };
@@ -306,7 +335,7 @@ const MaombiTab = ({ paperTheme, data }: any) => {
 
 
 export default function GroupScreen (){
-
+    const [visible, setVisible] = useState(false);
     const paperTheme = useTheme();
     const [menuVisible, setMenuVisible] = useState(false);
     const [anchorLayout, setAnchorLayout] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
@@ -328,6 +357,43 @@ export default function GroupScreen (){
         refetchOnWindowFocus: false,
         // refetchInterval: 2000,
     });
+
+    const leaveGroup = useMutation({
+        mutationFn: (groupId: string) =>
+            Post('left', { groupId:groupId }, 'token'),
+        onSuccess: () => {
+            toast('Umeondoka kwenye kikundi', 'done', 'Left group successfully');
+            queryClient.invalidateQueries({ queryKey: ['groups'] });
+
+            router.replace('/groups');
+        },
+        onError: () => {
+            toast('Imeshindikana kuondoka', 'error', 'Failed to leave group');
+        },
+    });
+
+    const showLeaveGroupAlert = () => {
+        Alert.alert(
+            'Ondoka Kwenye Kikundi',
+            `Ondoka Katika kikundi cha ${data?.name}?`,
+            [
+                {
+                    text: 'Ghairi',
+                    style: 'cancel',
+                },
+                {
+                    text: 'Ndiyo, Ondoka',
+                    style: 'destructive',
+                    onPress: () => {
+                        if (data?.group_id) {
+                            leaveGroup.mutate(data?.group_id);
+                        }
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+    };
 
     const title = data?.name ?? "Mchezo wa Biashara"
 
@@ -359,7 +425,7 @@ export default function GroupScreen (){
     const closeMenu = () => setMenuVisible(false);
     const handleEditGroup = () => { console.log('Edit Group'); closeMenu(); };
     const handleViewTerms = () => {router.push(`/rules/${id}`); closeMenu(); };
-    const handleLeaveGroup = () => { console.log('Leave Group'); closeMenu(); };
+
     const onSubmit = async(data:any) => { console.log('Lipa Mchango Pressed. Form Data:', data); };
 
 
@@ -418,7 +484,7 @@ const router = useRouter()
                     <Menu.Item onPress={handleEditGroup} title="Hariri Kikundi" leadingIcon="pencil-outline" />
                     <Menu.Item onPress={handleViewTerms} title="Kanuni na Masharti" leadingIcon="file-document-outline" />
                     <Divider />
-                    <Menu.Item onPress={handleLeaveGroup} title="Ondoka Kwenye Kikundi" leadingIcon="logout" titleStyle={{ color: paperTheme.colors.error }}/>
+                    <Menu.Item onPress={showLeaveGroupAlert} title="Ondoka Kwenye Kikundi" leadingIcon="logout" titleStyle={{ color: paperTheme.colors.error }}/>
                 </Menu>
             </Appbar.Header>
 

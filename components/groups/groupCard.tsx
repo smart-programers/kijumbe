@@ -8,7 +8,7 @@ import {useRouter} from "expo-router";
 interface Group {
   id: string;
   name: string;
-  group_status: 'active' | 'completed' | 'pending'; 
+  group_status: 'active' | 'completed' | 'pending' | 'removed';
   contributionAmount: number;
   currency: string;
   members: number;
@@ -25,9 +25,11 @@ const getStatusStyle = (status: Group['group_status']) => {
     case 'active':
       return { text: 'Hai', color: '#009c41', textColor: '#FFFFFF' };
     case 'completed':
-      return { text: 'Iliokamilika', color: '#4682B4', textColor: '#FFFFFF' }; 
+      return { text: 'Iliokamilika', color: '#4682B4', textColor: '#FFFFFF' };
     case 'pending':
-      return { text: 'Inayosubiri', color: '#FFA500', textColor: '#FFFFFF' }; 
+      return { text: 'Inayosubiri', color: '#FFA500', textColor: '#FFFFFF' };
+    case 'removed':
+      return { text: 'Imeondolewa', color: '#D32F2F', textColor: '#FFFFFF' };
     default:
       return { text: 'N/A', color: '#888888', textColor: '#FFFFFF' };
   }

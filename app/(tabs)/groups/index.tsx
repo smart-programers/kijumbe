@@ -108,6 +108,7 @@ export default function VikundiPage({navigation}: any) {
                 label: "Michezo Zilizokamilika",
             },
             {type: "filter", group_status: "pending", label: "Michezo Inayosubiri"},
+            {type: "filter", group_status: "removed", label: "Michezo Uliyondoka"},
         ],
         [],
     );
