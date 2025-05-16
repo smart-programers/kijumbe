@@ -129,7 +129,7 @@ const ProfileScreen = () => {
             const parsedPhoneNumber = parsePhoneNumberFromString(data?.phoneNumber);
 
             setFormPhoneNumber(parsedPhoneNumber?.nationalNumber || data?.phoneNumber || '');
-            setFormCountryCode(parsedPhoneNumber?.country?.callingCode || userData.phoneCountryCode || 'TZ');
+            setFormCountryCode(parsedPhoneNumber?.country || userData.phoneCountryCode || 'TZ');
             setSelectedImage(null);
         }
     }, [dialogVisible, data, reset]);

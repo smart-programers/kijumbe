@@ -1,20 +1,81 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { View, StyleSheet, Text } from "react-native";
-import { Button, Card } from "react-native-paper";
-import { formatDate, getDaysAgo } from "@/actions/Utility";
+import {ActivityIndicator, Button, Card, Dialog, Portal, RadioButton} from "react-native-paper";
+import {formatDate, getDaysDifference, queryClient} from "@/actions/Utility";
 import { Ionicons } from "@expo/vector-icons";
 import { LegendList, LegendListRenderItemProps } from "@legendapp/list";
+import {Controller, useForm} from "react-hook-form";
+import {Post} from "@/actions/helpers";
+import toast from "@/actions/toast";
 
 const day = "Siku";
 const text = "Kiasi cha Mchango";
 const dateHeader = "Tarehe ya Mwisho";
 const payCaption = "Lipa Sasa";
 
+const PROVIDERS = ["Airtel", "Tigo", "Halopesa", "Azampesa", "Mpesa"];
 export default function GroupList({ groups }: { groups: any[] }) {
   const header = "Malipo Yajayo";
   const caption = "Angalia Vyote";
 
-  const renderCardItem = ({ item }: LegendListRenderItemProps<any>) => (
+    const [visible, setVisible] = useState(false);
+    const [visiblePayDialog, setVisiblePayDialog] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<any>(null);
+
+    const { control, handleSubmit, reset } = useForm({
+        defaultValues: {
+            provider: "Tigo",
+        },
+    });
+
+    const openDialog = (group: any) => {
+        setSelectedGroup(group);
+        reset({ provider: "Tigo" });
+        setVisible(true);
+    };
+
+    const closeDialog = () => {
+        setVisible(false);
+        setSelectedGroup(null);
+    };
+
+    const openPaymentDialog = () => {
+        setVisiblePayDialog(true);
+    };
+    const closePaymentDialog = () => {
+        setVisiblePayDialog(false);
+    };
+
+    const onSubmit = async (data: any) => {
+        if (!selectedGroup) return;
+
+        const amount = Number(selectedGroup.expected_amount);
+        const feeAmount = Number((amount * 0.02).toFixed(2));
+        closeDialog();
+        const payload = {
+            groupId: selectedGroup.group_id,
+            amount:amount,
+            feeAmount:feeAmount,
+            // provider: data.provider,
+            date: selectedGroup.next_due_date,
+        };
+        openPaymentDialog()
+
+        try {
+           const response = await Post("pay",payload,"token")
+            closePaymentDialog()
+
+            toast(response?.data?.data?.message,"done",response?.data?.data?.message)
+            queryClient.invalidateQueries(['homepage'])
+
+        } catch (err) {
+            console.error("Payment error:", err);
+            toast("Payment Failed","error","Payment Failed")
+        }
+    };
+
+
+        const renderCardItem = ({ item }: LegendListRenderItemProps<any>) => (
     <Card style={styles.cardRow}>
       <Card.Content style={styles.cardContent}>
         <View style={styles.topRow}>
@@ -23,7 +84,7 @@ export default function GroupList({ groups }: { groups: any[] }) {
             <View style={styles.daysChip}>
               <Ionicons name="stopwatch-outline" size={14} color={"#8B4513"} style={{ marginRight: 3 }} />
               <Text style={styles.daysText}>
-                {day} {getDaysAgo(item.next_due_date)}
+                {day} {getDaysDifference(item.next_due_date)}
               </Text>
             </View>
           )}
@@ -48,6 +109,7 @@ export default function GroupList({ groups }: { groups: any[] }) {
            uppercase={false}
            labelStyle={styles.buttonLabel}
            mode="contained"
+           onPress={() => openDialog(item)}
          >
           {payCaption}
         </Button>
@@ -76,6 +138,45 @@ export default function GroupList({ groups }: { groups: any[] }) {
        ) : (
          <Text style={styles.noDataText}>Hakuna malipo yajayo.</Text>
        )}
+
+        <Portal>
+            <Dialog visible={visible} onDismiss={closeDialog}>
+                <Dialog.Title>Thibitisha Malipo</Dialog.Title>
+                <Dialog.Content>
+                    <Text>Mchango: {selectedGroup?.currency} {selectedGroup?.expected_amount}</Text>
+                    <Text>Ada ya Huduma (2%): {selectedGroup ? (selectedGroup.expected_amount * 0.02).toFixed(2) : '0'}</Text>
+                    {/*<Text style={{ marginTop: 12, marginBottom: 5 }}>Chagua Mtoa Huduma:</Text>*/}
+                    {/*<Controller*/}
+                    {/*    name="provider"*/}
+                    {/*    control={control}*/}
+                    {/*    render={({ field: { onChange, value } }) => (*/}
+                    {/*        <RadioButton.Group onValueChange={onChange} value={value}>*/}
+                    {/*            {PROVIDERS.map((provider) => (*/}
+                    {/*                <View key={provider} style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>*/}
+                    {/*                    <RadioButton value={provider} />*/}
+                    {/*                    <Text>{provider}</Text>*/}
+                    {/*                </View>*/}
+                    {/*            ))}*/}
+                    {/*        </RadioButton.Group>*/}
+                    {/*    )}*/}
+                    {/*/>*/}
+                </Dialog.Content>
+                <Dialog.Actions>
+                    <Button onPress={closeDialog}>Ghairi</Button>
+                    <Button onPress={handleSubmit(onSubmit)}>Lipa</Button>
+                </Dialog.Actions>
+            </Dialog>
+        </Portal>
+
+        <Portal>
+            <Dialog visible={visiblePayDialog} onDismiss={closePaymentDialog}>
+                <Dialog.Title>Tafadhali Subiri...</Dialog.Title>
+                <Dialog.Content>
+                 <ActivityIndicator animating={true} color={"#009c41"}/>
+                </Dialog.Content>
+
+            </Dialog>
+        </Portal>
     </View>
   );
 }

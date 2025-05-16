@@ -1,5 +1,5 @@
-import React, {useRef, useState} from 'react';
-import {View, StyleSheet, ScrollView, Dimensions, FlatList, Alert} from 'react-native';
+import React, {useEffect, useRef, useState} from 'react';
+import {View, StyleSheet, ScrollView, Dimensions, FlatList, Alert, TouchableOpacity} from 'react-native';
 import {
     Appbar,
     Card,
@@ -11,13 +11,13 @@ import {
     MD3LightTheme,
     useTheme,
     Icon, FAB, IconButton,
-    Avatar,
+    Avatar, Portal, Dialog, ActivityIndicator,
 
 } from 'react-native-paper';
-import { useForm } from 'react-hook-form';
+import {Controller, useForm} from 'react-hook-form';
 import Constants from 'expo-constants';
 import { TabView, TabBar } from 'react-native-tab-view';
-import {Ionicons} from "@expo/vector-icons";
+import {Ionicons, MaterialCommunityIcons} from "@expo/vector-icons";
 import {useMutation, useQuery} from "@tanstack/react-query";
 import {Get, GetById, GetQuery, Patch, Post} from "@/actions/helpers";
 import {useLocalSearchParams, useRouter} from "expo-router";
@@ -26,6 +26,7 @@ import {queryClient, renderContributionCycle} from "@/actions/Utility";
 import toast from "@/actions/toast";
 import {widthPercentageToDP as wp, heightPercentageToDP as hp} from 'react-native-responsive-screen';
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import DateTimePickerModal from "react-native-modal-datetime-picker";
 
 const defaultTheme = {
     ...MD3LightTheme,
@@ -258,12 +259,48 @@ const MalipoTab = ({ paperTheme,data }:any) => {
     const themeToUse = paperTheme || defaultTheme;
     return (
         <ScrollView contentContainerStyle={styles.scrollContainerTab}>
+            {(data?.payments && data?.payments.length >0) ?
+                (
+                    <LegendList
+                        data={data.payments}
+                        keyExtractor={(item:any, index:number) => index.toString()}
+                        renderItem={({ item, index }:{item:any,index:number}) => (
+                            <Card style={styles.memberCard}>
+                                <Card.Content style={styles.memberCardContent}>
 
+                                    <Avatar.Image
+                                        size={48}
+                                        source={{uri:item?.user?.photoUrl || "https://via.placeholder.com/150"}}
+                                        // style={styles.memberAvatar}
+                                    />
+                                    <View style={styles.memberInfo}>
+                                        <Text  style={{  color: 'black'  }}>
+                                            {item.user?.firstName} {item.user?.lastName}
+                                        </Text>
+                                        <Text variant="bodyMedium" style={{ color: 'black' }}>
+                                            {parseFloat(item.amount) + parseFloat(item.feeAmount)}
+                                        </Text>
+                                        <Text variant="bodyMedium" style={{ color: 'black' }}>
+                                            {item.receiptUrl}
+                                        </Text>
+
+                                        <Text variant="bodyMedium" style={{ color: 'black' }}>
+                                            {item.status}
+                                        </Text>
+                                    </View>
+                                </Card.Content>
+
+                            </Card>
+                        )}
+                        contentContainerStyle={styles.flatListContentContainer}
+                    />
+                ):
+                    (
             <View style={styles.placeholderContainer}>
                 <Icon source="cash-multiple" size={60} color={themeToUse.colors.onSurfaceDisabled} />
                 <Text variant="titleMedium" style={[styles.placeholderTitle, { color: themeToUse.colors.onSurface }]}>Hakuna historia ya malipo</Text>
                 <Text variant="bodyMedium" style={[styles.placeholderSubtitle, { color: themeToUse.colors.onSurfaceDisabled }]}>Malipo yajayo na yaliyopita yataonekana hapa</Text>
-            </View>
+            </View>)}
         </ScrollView>
     );
 };
@@ -338,8 +375,27 @@ export default function GroupScreen (){
     const [visible, setVisible] = useState(false);
     const paperTheme = useTheme();
     const [menuVisible, setMenuVisible] = useState(false);
+    const startDate = new Date().toISOString().split('T')[0];
     const [anchorLayout, setAnchorLayout] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
     const anchorRef = useRef<any>(null);
+    const [datePickerVisible, setDatePickerVisible] = useState(false);
+    const [payDate,setPayDate]=useState<any|null>(null)
+    const hideDatePicker = () => setDatePickerVisible(false);
+
+    useEffect(() => {
+        if (startDate) {
+            setPayDate(startDate);
+        }
+    }, [startDate]);
+
+    const handleConfirm = (date: Date) => {
+        const localDate = new Date(date);
+        const formattedDate = `${localDate.getFullYear()}-${String(localDate.getMonth() + 1).padStart(2, '0')}-${String(localDate.getDate()).padStart(2, '0')}`;
+
+        setPayDate(formattedDate);
+        hideDatePicker();
+    };
+
     const { id }: any = useLocalSearchParams();
     const { data, isLoading, error } = useQuery({
         queryKey: ['groupId',id],
@@ -357,6 +413,8 @@ export default function GroupScreen (){
         refetchOnWindowFocus: false,
         // refetchInterval: 2000,
     });
+
+    const currency = "TZS"
 
     const leaveGroup = useMutation({
         mutationFn: (groupId: string) =>
@@ -415,7 +473,9 @@ Bonyeza NDIYO Ili kuondoka kwenye kikundi`,
         control,
         handleSubmit,
         formState: { errors },
-    } = useForm({ defaultValues: {} });
+    } = useForm({ defaultValues: {
+        paymentDate:new Date(),
+        } });
 
 
     const [index, setIndex] = useState(0);
@@ -430,8 +490,49 @@ Bonyeza NDIYO Ili kuondoka kwenye kikundi`,
     const closeMenu = () => setMenuVisible(false);
     const handleEditGroup = () => { console.log('Edit Group'); closeMenu(); };
     const handleViewTerms = () => {router.push(`/rules/${id}`); closeMenu(); };
+    const [open, setOpen] = useState(false);
+    const [selectedGroup, setSelectedGroup] = useState<any>(null);
+    const [visiblePayDialog, setVisiblePayDialog] = useState(false);
 
-    const onSubmit = async(data:any) => { console.log('Lipa Mchango Pressed. Form Data:', data); };
+    const openDialog = () => {
+        setOpen(true);
+    };
+
+    const closeDialog = () => {
+        setOpen(false);
+    };
+
+    const openPaymentDialog = () => {
+        setVisiblePayDialog(true);
+    };
+    const closePaymentDialog = () => {
+        setVisiblePayDialog(false);
+    };
+    const onSubmit = async () => {
+        closeDialog();
+        const amount = Number(data?.contributionAmount);
+        const feeAmount = Number((data?.contributionAmount * 0.02).toFixed(2));
+        const payload = {
+            groupId: data.group_id,
+            amount:amount,
+            feeAmount:feeAmount,
+            // provider: data.provider,
+            date: new Date(payDate),
+        };
+        openPaymentDialog()
+
+        try {
+           const response = await Post("pay",payload,"token")
+            closePaymentDialog()
+            toast(response?.data?.data?.message,"done",response?.data?.data?.message)
+            queryClient.invalidateQueries({ queryKey: ["groupId", id] })
+            queryClient.invalidateQueries(['homepage'])
+
+        } catch (err) {
+            console.error("Payment error:", err);
+            toast("Payment Failed","error","Payment Failed")
+        }
+    };
 
 
     const renderScene = ({ route }:any) => {
@@ -522,9 +623,72 @@ const router = useRouter()
                     label="Lipa Mchango"
                     color="#FFFFFF"
                     style={styles.fab}
-                    onPress={handleSubmit(onSubmit)}
+                    onPress={() => openDialog()}
                 />
             {/*</View>*/}
+
+            <Portal>
+                <Dialog visible={open} onDismiss={closeDialog}>
+                    <Dialog.Title>Thibitisha Malipo</Dialog.Title>
+                    <Dialog.Content>
+                        <Text>Mchango: {currency} {data?.contributionAmount}</Text>
+                        <Text>Ada ya Huduma (2%): {data?.contributionAmount ? (data?.contributionAmount * 0.02).toFixed(2) : '0'}</Text>
+                        <Text style={{ marginTop: 12, marginBottom: 5 }}>Chagua Tarehe ya Malipo:</Text>
+
+                        <Controller
+                            name="paymentDate"
+                            control={control}
+                            defaultValue={new Date()}
+                            render={({ field: { onChange, value } }) => (
+                                <>
+
+
+                                            <View style={styles.inputWithIcon}>
+                                                <MaterialCommunityIcons name="calendar" size={24} color="#757575" style={styles.inputIcon} />
+                                                <View style={styles.dropdownContainer}>
+                                                    <Button
+                                                        mode="outlined"
+                                                        onPress={() => setDatePickerVisible(true)}
+                                                        style={styles.dropdownButton}
+                                                        contentStyle={styles.dropdownButtonContent}
+                                                        icon={() => <MaterialCommunityIcons name="chevron-right" size={24} color="#757575" />}
+                                                        labelStyle={styles.dropdownButtonLabel}
+                                                    >
+                                                        {payDate}
+                                                    </Button>
+
+                                                    <DateTimePickerModal
+                                                        isVisible={datePickerVisible}
+                                                        mode="date"
+                                                        onConfirm={(date) => {
+
+                                                            handleConfirm(date);
+                                                        }}
+                                                        onCancel={hideDatePicker}
+                                                    />
+                                                </View>
+                                            </View>
+
+                                </>
+                            )}
+                        />
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={closeDialog}>Ghairi</Button>
+                        <Button onPress={onSubmit}>Lipa</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+
+            <Portal>
+                <Dialog visible={visiblePayDialog} onDismiss={closePaymentDialog}>
+                    <Dialog.Title>Tafadhali Subiri...</Dialog.Title>
+                    <Dialog.Content>
+                        <ActivityIndicator animating={true} color={"#009c41"}/>
+                    </Dialog.Content>
+
+                </Dialog>
+            </Portal>
         </View>
     );
 };
@@ -688,6 +852,43 @@ const styles = StyleSheet.create({
     },
     memberInfo: {
         flex: 1,
+    },
+    inputContainer: {
+        marginBottom: 20,
+    },
+    inputLabel: {
+        fontSize: 14,
+        marginBottom: 8,
+        fontWeight: '500',
+    },
+    inputWithIcon: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    inputIcon: {
+        marginRight: 10,
+    },
+    input: {
+        flex: 1,
+        backgroundColor: 'white',
+    },
+    dropdownContainer: {
+        flex: 1,
+    },
+    dropdownButton: {
+        width: '100%',
+        justifyContent: 'space-between',
+        borderColor: '#CCCCCC',
+        borderWidth: 1,
+        backgroundColor: 'white',
+    },dropdownButtonContent: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+    },
+    dropdownButtonLabel: {
+        color: 'black',
+        marginRight: 'auto',
     },
 });
 

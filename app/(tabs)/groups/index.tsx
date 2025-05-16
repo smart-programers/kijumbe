@@ -184,7 +184,7 @@ export default function VikundiPage({navigation}: any) {
                 showsHorizontalScrollIndicator={false}
                 style={styles.filterList}
                 contentContainerStyle={styles.filterListContent}
-                keyExtractor={(item) => item.status}
+                keyExtractor={(item) => item.group_status}
             />
         </View>
     );
@@ -223,7 +223,7 @@ export default function VikundiPage({navigation}: any) {
                 contentContainerStyle={styles.groupListContent}
                 ListEmptyComponent={ListEmptyComponent}
                 keyExtractor={(item) =>
-                    item.type === "group" ? item.id : item.status
+                    item.type === "group" ? item.group.id.toString() : item.group_status
                 }
             />
 
